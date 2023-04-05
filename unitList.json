@@ -1,0 +1,207 @@
+{
+    "categories": [
+      {
+        "name": "Medieval",
+        "units": [
+          {
+            "name": "Heavy Knight",
+            "tier": 1
+          },
+          {
+            "name": "Footman",
+            "tier": 1
+          },
+          {
+            "name": "Archer",
+            "tier": 1
+          },
+          {
+            "name": "Cavalry",
+            "tier": 2
+          },
+          {
+            "name": "Catapult",
+            "tier": 2
+          },
+          {
+            "name": "Spearman",
+            "tier": 1
+          }
+        ]
+      },
+      {
+        "name": "Heros",
+        "units": [
+          {
+            "name": "Golden Knight",
+            "tier": 3
+          },
+          {
+            "name": "Elven Huntress",
+            "tier": 4
+          },
+          {
+            "name": "Soul Tyrant",
+            "tier": 4
+          },
+          {
+            "name": "Laser Knight",
+            "tier": 4
+          }
+        ]
+      },
+      {
+        "name": "WW2",
+        "units": [
+          {
+            "name": "US Soldier",
+            "tier": 2
+          },
+          {
+            "name": "German Soldier",
+            "tier": 2
+          },
+          {
+            "name": "German Machine Gunner",
+            "tier": 3
+          }
+        ]
+      },
+      {
+        "name": "Evil",
+        "units": [
+          {
+            "name": "Zombie",
+            "tier": 1
+          },
+          {
+            "name": "Runner Zombie",
+            "tier": 1
+          },
+          {
+            "name": "Skeleton Warrior",
+            "tier": 2
+          }
+        ]
+      },
+      {
+        "name": "Ancient Greece",
+        "units": [
+          {
+            "name": "Roman",
+            "tier": 1
+          },
+          {
+            "name": "Spartan",
+            "tier": 2
+          },
+          {
+            "name": "WildMan",
+            "tier": 1
+          },
+          {
+            "name": "Persian",
+            "tier": 1
+          }
+        ]
+      },
+      {
+        "name": "Fantasy",
+        "units": [
+          {
+            "name": "Orc",
+            "tier": 2
+          },
+          {
+            "name": "Giant Ogre",
+            "tier": 3
+          },
+          {
+            "name": "Dwarves",
+            "tier": 2
+          },
+          {
+            "name": "Giant Cyclops",
+            "tier": 2
+          }
+        ]
+      },
+      {
+        "name": "Animals",
+        "units": [
+          {
+            "name": "Chicken",
+            "tier": 1
+          },
+          {
+            "name": "Penguin",
+            "tier": 1
+          },
+          {
+            "name": "Tortoise",
+            "tier": 2
+          },
+          {
+            "name": "Kangaroo",
+            "tier": 1
+          },
+          {
+            "name": "T-Rex",
+            "tier": 5
+          }
+        ]
+      },
+      {
+        "name": "Festive",
+        "units": [
+          {
+            "name": "Santa",
+            "tier": 1
+          },
+          {
+            "name": "ScareCrow",
+            "tier": 2
+          },
+          {
+            "name": "Hallow-Man",
+            "tier": 3
+          }
+        ]
+      },
+      {
+        "name": "Inaminate",
+        "units": [
+          {
+            "name": "Dresser",
+            "tier": 2
+          },
+          {
+            "name": "Table",
+            "tier": 2
+          }
+        ]
+      },
+      {
+        "name": "Sci-Fi",
+        "units": [
+          {
+            "name": "Mech Walker",
+            "tier": 5
+          },
+          {
+            "name": "Tornado Trooper",
+            "tier": 1
+          }
+        ]
+      },
+      {
+        "name": "18th Century",
+        "units": [
+          {
+            "name": "RedCoats",
+            "tier": 2
+          }
+        ]
+      }
+    ]
+  }
