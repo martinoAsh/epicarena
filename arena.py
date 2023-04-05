@@ -63,9 +63,9 @@ class Unit:
         if self.tier == 1:
             return proposedCount
         elif self.tier == 2:
-            return proposedCount
+            return int(proposedCount/2)
         elif self.tier == 3:
-            return proposedCount
+            return int(proposedCount/4)
         elif self.tier == 4:
             return 1
         elif self.tier == 5:
@@ -77,6 +77,7 @@ class Unit:
     def evolveUnit(self):
     #------------------------------
         # TODO: improve this logic
+ 
         if self.tier == 1:
             if self.count*2 <= Tier1MaxUnits:
                 self.count = self.count*2
@@ -208,20 +209,25 @@ class Player:
         print(self.name + ", you drew: ", end='')
         drawnUnit.printStats()
         # check if already in deck
-        if self.evolveUnitIfInDeck(categoryNr, unitNr):
+        if self.evolveUnitIfInDeck(categoryNr, unitNr, drawnUnit.count):
             return
 
         self.addUnit(drawnUnit)
 
     #------------------------------
-    def evolveUnitIfInDeck(self, categoryNr, unitNr):
+    def evolveUnitIfInDeck(self, categoryNr, unitNr, newCount):
     #------------------------------
         for currentUnit in self.deck:
             if currentUnit.categoryNr == categoryNr and currentUnit.unitNr == unitNr:
-                if currentUnit.evolveUnit():
-                    print("Cool, you already had this unit. It was evolved!")
-                else: 
-                    print("Sorry, you have this unit but it is already maxed out")
+                userInput = input("NICE! You already have this Unit. You wanna evolve or replace it? (e/r) ")
+                if userInput == 'e':
+                    if currentUnit.evolveUnit():
+                        print("Cool, Unit was evolved!")
+                    else: 
+                        print("Sorry, Unit is already maxed out")
+                else:
+                    currentUnit.count = newCount
+                    print("Unit was replaced!")
                 return True
         return False
 
