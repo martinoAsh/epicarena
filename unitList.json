@@ -38,7 +38,7 @@
           },
           {
             "name": "Elven Huntress",
-            "tier": 4
+            "tier": 5
           },
           {
             "name": "Soul Tyrant",
@@ -76,7 +76,7 @@
           },
           {
             "name": "Runner Zombie",
-            "tier": 2
+            "tier": 1
           },
           {
             "name": "Skeleton Warrior",
@@ -139,7 +139,7 @@
           },
           {
             "name": "Tortoise",
-            "tier": 1
+            "tier": 2
           },
           {
             "name": "Kangaroo",
@@ -147,7 +147,7 @@
           },
           {
             "name": "T-Rex",
-            "tier": 5
+            "tier": 4
           }
         ]
       },
@@ -186,7 +186,7 @@
         "units": [
           {
             "name": "Mech Walker",
-            "tier": 6
+            "tier": 5
           },
           {
             "name": "Tornado Trooper",
@@ -216,10 +216,14 @@
           },
           {
             "name": "Combine Soldier",
-            "tier": 3
+            "tier": 4
           },
           {
-            "name": "Pickachu",
+            "name": "Metro Cop",
+            "tier": 2
+          },
+          {
+            "name": "Pikachu",
             "tier": 2
           },
           {
@@ -235,10 +239,6 @@
             "tier": 1
           },
           {
-            "name": "Armored Mountain",
-            "tier": 5
-          },
-          {
             "name": "DOOM GUY",
             "tier": 5
           },
@@ -248,7 +248,7 @@
           },
           {
             "name": "Halo: Marine",
-            "tier": 3
+            "tier": 4
           },
           {
             "name": "Olog Hai",
@@ -271,12 +271,8 @@
             "tier": 4
           },
           {
-            "name": "Bandit",
-            "tier": 1
-          },
-          {
             "name": "Hydra",
-            "tier": 2
+            "tier": 4
           },
           {
             "name": "Mountain Troll",
@@ -332,7 +328,7 @@
           },
           {
             "name": "Boo",
-            "tier": 1
+            "tier": 2
           },
           {
             "name": "Lizardman-Sword",
@@ -347,16 +343,12 @@
             "tier": 2
           },
           {
-            "name": "Hydra",
-            "tier": 6
-          },
-          {
             "name": "Baby Groot",
             "tier": 4
           },
           {
             "name": "Rohan Swordsman",
-            "tier": 1
+            "tier": 2
           },
           {
             "name": "Mountain Troll",

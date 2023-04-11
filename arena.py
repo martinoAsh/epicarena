@@ -221,15 +221,25 @@ class Player:
         file = open("unitList.json")
         unitData = json.load(file)
         drawnTier = 10000
-        otherPlayerHasUnit = True
+        redraw = True
 
         # Draw until an allowed unit is drawn
-        while drawnTier > allowedTier or otherPlayerHasUnit == True:
+        while drawnTier > allowedTier or redraw == True:
             categoryNr = random.randint(0,len(self.unitList)-1)
             unitNr = random.randint(0,self.unitList[categoryNr]-1)
             isActive = len(self.deck) < 4
             drawnTier = unitData['categories'][categoryNr]['units'][unitNr]['tier']
-            otherPlayerHasUnit = otherPlayer.isUnitInDeck(categoryNr, unitNr)
+            if allowedTier > 2 and drawnTier == 1:
+                redraw = True
+                continue
+            elif allowedTier > 3 and drawnTier == 2:
+                redraw = True
+                continue
+            elif allowedTier > 5 and drawnTier == 3:
+                redraw = True
+                continue
+            
+            redraw = otherPlayer.isUnitInDeck(categoryNr, unitNr)
             # print("Drew Unit of tier: " + str(drawnTier) + ", allowed: "
             #       + str(allowedTier) + " , roundet unitcount: "
             #       + str(round(unitCount/drawnTier)))
@@ -349,13 +359,16 @@ def main():
             playerInput = print(currentPlayer.name + "s TURN: ")
             print("")
             currentPlayer.printUnits()
-            playerInput = input(currentPlayer.name + ", did you win? (y/n) ")
-            print("-----------------------------")
+            playerInput = 'x'
+            while playerInput != 'n' and playerInput != 'y':
+                playerInput = input(currentPlayer.name + ", did you win? (y/n) ")
+
             if playerInput == 'n':
                 # player gets to evolve a unit
                 currentPlayer.evolveUnitAfterRound()
             else:
                 currentPlayer.score += 1
+            print("-----------------------------")
 
             #draw a new unit
             currentPlayer.drawUnit(allowedTier, newUnitCount, playerList[abs(playerIndex-1)])
