@@ -1,1 +1,8 @@
 units mit + units evolve können nicht gut maxed out werden
+
+did you win? bei enter geht die runde weiter
+
+ab tier 4 kein tier 1
+    tier 5 kein tier 2
+     tier 6 kein tier 3
+      tier 7 kein tier 4
