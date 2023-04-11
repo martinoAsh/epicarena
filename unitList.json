@@ -5,7 +5,7 @@
         "units": [
           {
             "name": "Heavy Knight",
-            "tier": 1
+            "tier": 2
           },
           {
             "name": "Footman",
@@ -17,11 +17,11 @@
           },
           {
             "name": "Cavalry",
-            "tier": 2
+            "tier": 3
           },
           {
             "name": "Catapult",
-            "tier": 2
+            "tier": 3
           },
           {
             "name": "Spearman",
@@ -34,7 +34,7 @@
         "units": [
           {
             "name": "Golden Knight",
-            "tier": 3
+            "tier": 4
           },
           {
             "name": "Elven Huntress",
@@ -63,7 +63,7 @@
           },
           {
             "name": "German Machine Gunner",
-            "tier": 3
+            "tier": 4
           }
         ]
       },
@@ -72,15 +72,15 @@
         "units": [
           {
             "name": "Zombie",
-            "tier": 1
+            "tier": 2
           },
           {
             "name": "Runner Zombie",
-            "tier": 1
+            "tier": 2
           },
           {
             "name": "Skeleton Warrior",
-            "tier": 2
+            "tier": 1
           }
         ]
       },
@@ -97,7 +97,7 @@
           },
           {
             "name": "WildMan",
-            "tier": 1
+            "tier": 2
           },
           {
             "name": "Persian",
@@ -114,7 +114,7 @@
           },
           {
             "name": "Giant Ogre",
-            "tier": 3
+            "tier": 4
           },
           {
             "name": "Dwarves",
@@ -122,7 +122,7 @@
           },
           {
             "name": "Giant Cyclops",
-            "tier": 2
+            "tier": 4
           }
         ]
       },
@@ -139,11 +139,11 @@
           },
           {
             "name": "Tortoise",
-            "tier": 2
+            "tier": 1
           },
           {
             "name": "Kangaroo",
-            "tier": 1
+            "tier": 2
           },
           {
             "name": "T-Rex",
@@ -156,7 +156,7 @@
         "units": [
           {
             "name": "Santa",
-            "tier": 1
+            "tier": 2
           },
           {
             "name": "ScareCrow",
@@ -173,7 +173,7 @@
         "units": [
           {
             "name": "Dresser",
-            "tier": 2
+            "tier": 3
           },
           {
             "name": "Table",
@@ -186,11 +186,11 @@
         "units": [
           {
             "name": "Mech Walker",
-            "tier": 5
+            "tier": 6
           },
           {
             "name": "Tornado Trooper",
-            "tier": 1
+            "tier": 2
           }
         ]
       },
@@ -200,6 +200,167 @@
           {
             "name": "RedCoats",
             "tier": 2
+          }
+        ]
+      },
+      {
+        "name": "Modded Units",
+        "units": [
+          {
+            "name": "Troll Warrior",
+            "tier": 3
+          },
+          {
+            "name": "Elephant",
+            "tier": 4
+          },
+          {
+            "name": "Combine Soldier",
+            "tier": 3
+          },
+          {
+            "name": "Pickachu",
+            "tier": 2
+          },
+          {
+            "name": "Bear",
+            "tier": 4
+          },
+          {
+            "name": "Death-Trooper",
+            "tier": 2
+          },
+          {
+            "name": "Japanese Soldier",
+            "tier": 1
+          },
+          {
+            "name": "Armored Mountain",
+            "tier": 5
+          },
+          {
+            "name": "DOOM GUY",
+            "tier": 5
+          },
+          {
+            "name": "Frost Giant",
+            "tier": 5
+          },
+          {
+            "name": "Halo: Marine",
+            "tier": 3
+          },
+          {
+            "name": "Olog Hai",
+            "tier": 4
+          },
+          {
+            "name": "Sonic",
+            "tier": 6
+          },
+          {
+            "name": "Mr IG",
+            "tier": 5
+          },
+          {
+            "name": "Battle Droid",
+            "tier": 1
+          },
+          {
+            "name": "Monster",
+            "tier": 4
+          },
+          {
+            "name": "Bandit",
+            "tier": 1
+          },
+          {
+            "name": "Hydra",
+            "tier": 2
+          },
+          {
+            "name": "Mountain Troll",
+            "tier": 4
+          },
+          {
+            "name": "Rhino",
+            "tier": 4
+          },
+          {
+            "name": "Nazi Zombie",
+            "tier": 1
+          },
+          {
+            "name": "Armored Olog",
+            "tier": 4
+          },
+          {
+            "name": "Rohan Soldier",
+            "tier": 2
+          },
+          {
+            "name": "SEAL C",
+            "tier": 3
+          },
+          {
+            "name": "Stickman",
+            "tier": 1
+          },
+          {
+            "name": "Mario",
+            "tier": 7
+          },
+          {
+            "name": "Giant Demon",
+            "tier": 6
+          },
+          {
+            "name": "B1 Battle Droid",
+            "tier": 2
+          },
+          {
+            "name": "Olog Captain",
+            "tier": 5
+          },
+          {
+            "name": "Samurai Horse Robot",
+            "tier": 3
+          },
+          {
+            "name": "Batman",
+            "tier": 7
+          },
+          {
+            "name": "Boo",
+            "tier": 1
+          },
+          {
+            "name": "Lizardman-Sword",
+            "tier": 2
+          },
+          {
+            "name": "Super Battle Droid",
+            "tier": 3
+          },
+          {
+            "name": "Crawlerzzz",
+            "tier": 2
+          },
+          {
+            "name": "Hydra",
+            "tier": 6
+          },
+          {
+            "name": "Baby Groot",
+            "tier": 4
+          },
+          {
+            "name": "Rohan Swordsman",
+            "tier": 1
+          },
+          {
+            "name": "Mountain Troll",
+            "tier": 4
           }
         ]
       }

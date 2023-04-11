@@ -11,14 +11,16 @@ def prCyan(skk): print("\033[96m {}\033[00m" .format(skk))
 def prLightGray(skk): print("\033[97m {}\033[00m" .format(skk))
 def prBlack(skk): print("\033[98m {}\033[00m" .format(skk))
 
-maxUnitCount = 256
-Tier1MaxUnits = 256
-Tier2MaxUnits = 128
-Tier3MaxUnits = 100
-Tier4MaxUnits = 10
-Tier5MaxUnits = 5
-Tier6MaxUnits = 1
+maxUnitCount = 128
+Tier1MaxUnits = 128
+Tier2MaxUnits = 64
+Tier3MaxUnits = 32
+Tier4MaxUnits = 16
+Tier5MaxUnits = 8
+Tier6MaxUnits = 4
+Tier7MaxUnits = 1
 
+newTierCounter = 3
 
 #------------------------------------------------------------------------------
 class Unit:
@@ -41,12 +43,12 @@ class Unit:
             prGreen(self.unitName + 
                   " ("+ self.categoryName + ")"
                   ", Count: " + str(self.count) + 
-                  ", Active: " + str(self.isActive))
+                  ", Active: " + str(self.isActive) + ", Tier: " + str(self.tier))
         else:
             prRed(self.unitName +
                   " ("+ self.categoryName + ")"
                   ", Count: " + str(self.count) + 
-                  ", Active: " + str(self.isActive))
+                  ", Active: " + str(self.isActive) + ", Tier: " + str(self.tier))
 
     #------------------------------
     def lookUpAndSetNames(self):
@@ -67,8 +69,12 @@ class Unit:
         elif self.tier == 3:
             return int(proposedCount/4)
         elif self.tier == 4:
-            return 1
+            return int(proposedCount/8)
         elif self.tier == 5:
+            return int(proposedCount/16)
+        elif self.tier == 6:
+            return int(proposedCount/32)
+        elif self.tier == 7:
             return 1
         else:
             return 1
@@ -81,35 +87,49 @@ class Unit:
         if self.tier == 1:
             if self.count*2 <= Tier1MaxUnits:
                 self.count = self.count*2
-                prYellow(self.unitName + " was evolved! (Tier1)")
+                prYellow(self.unitName + " was evolved!")
                 return True
             else:
                 return False
         elif self.tier == 2:
             if self.count*2 <= Tier2MaxUnits:
                 self.count = self.count*2
-                prYellow(self.unitName + " was evolved! (Tier2)")
+                prYellow(self.unitName + " was evolved!")
                 return True
             else:
                 return False
         elif self.tier == 3:
-            if self.count+10 <= Tier3MaxUnits:
-                self.count = self.count+10
-                prYellow(self.unitName + " was evolved! (Tier3)")
+            if self.count*2 <= Tier3MaxUnits:
+                self.count = self.count*2
+                prYellow(self.unitName + " was evolved!")
                 return True
             else:
                 return False
         elif self.tier == 4:
-            if self.count+2 <= Tier4MaxUnits:
-                self.count = self.count+2
-                prYellow(self.unitName + " was evolved! (Tier4)")
+            if self.count*2 <= Tier4MaxUnits:
+                self.count = self.count*2
+                prYellow(self.unitName + " was evolved!")
                 return True
             else:
                 return False
         elif self.tier == 5:
             if self.count+1 <= Tier5MaxUnits:
                 self.count = self.count+1
-                prYellow(self.unitName + " was evolved! (Tier5)")
+                prYellow(self.unitName + " was evolved!")
+                return True
+            else:
+                return False
+        elif self.tier == 6:
+            if self.count+1 <= Tier6MaxUnits:
+                self.count = self.count+1
+                prYellow(self.unitName + " was evolved!")
+                return True
+            else:
+                return False
+        elif self.tier == 7:
+            if self.count+1 <= Tier7MaxUnits:
+                self.count = self.count+1
+                prYellow(self.unitName + " was evolved!")
                 return True
             else:
                 return False
@@ -154,6 +174,13 @@ class Player:
             self.deck.append(newUnit)
             print("Added new unit.")
             return
+        
+    def isUnitInDeck(self, categoryNr, unitNr):
+        for currentUnit in self.deck:
+            if currentUnit.categoryNr == categoryNr and currentUnit.unitNr == unitNr:
+                return True
+        return False
+
 
     #------------------------------
     def printUnits(self):
@@ -189,18 +216,20 @@ class Player:
 
 
     #------------------------------
-    def drawUnit(self, allowedTier, unitCount):
+    def drawUnit(self, allowedTier, unitCount, otherPlayer):
     #------------------------------
         file = open("unitList.json")
         unitData = json.load(file)
-        drawnTier = 100
+        drawnTier = 10000
+        otherPlayerHasUnit = True
 
         # Draw until an allowed unit is drawn
-        while drawnTier > allowedTier:
+        while drawnTier > allowedTier or otherPlayerHasUnit == True:
             categoryNr = random.randint(0,len(self.unitList)-1)
             unitNr = random.randint(0,self.unitList[categoryNr]-1)
             isActive = len(self.deck) < 4
             drawnTier = unitData['categories'][categoryNr]['units'][unitNr]['tier']
+            otherPlayerHasUnit = otherPlayer.isUnitInDeck(categoryNr, unitNr)
             # print("Drew Unit of tier: " + str(drawnTier) + ", allowed: "
             #       + str(allowedTier) + " , roundet unitcount: "
             #       + str(round(unitCount/drawnTier)))
@@ -291,16 +320,22 @@ def checkIfInputIsInRange(value, min, max):
 #------------------------------------------------------------------------------
 def main():
 #------------------------------------------------------------------------------
-    playerList = [Player("martin"), Player("mathias")]
+    player1 = input("Who is Player 1: ")
+    player2 = input("Who is Player 2: ")
+
+    playerList = [Player(player1), Player(player2)]
+
+
     print("---------------------------------------------------------------")
     print("----------------NEW GAME---------------------------------------")
     print("---------------------------------------------------------------")
     print()
 
     #first draw for each player
-    for currentPlayer in playerList:
-        currentPlayer.drawUnit(1, 1)
+    for playerIndex in range(len(playerList)):
+        playerList[playerIndex].drawUnit(1, 1, playerList[abs(playerIndex-1)])
         print("---------------------------------------------------------------")
+
 
     roundCount = 0
     allowedTier = 1
@@ -308,7 +343,8 @@ def main():
 
     while 1:
         print("---------------------------------------------------------------")
-        for currentPlayer in playerList:
+        for playerIndex in range(len(playerList)):
+            currentPlayer = playerList[playerIndex]
             print("")
             playerInput = print(currentPlayer.name + "s TURN: ")
             print("")
@@ -322,7 +358,7 @@ def main():
                 currentPlayer.score += 1
 
             #draw a new unit
-            currentPlayer.drawUnit(allowedTier, newUnitCount)
+            currentPlayer.drawUnit(allowedTier, newUnitCount, playerList[abs(playerIndex-1)])
 
             print("")
             currentPlayer.printUnits()
@@ -347,7 +383,7 @@ def main():
             print("---------------------------------------------------------------")
             print("---------------------------------------------------------------")
         roundCount += 1
-        if roundCount %5 == 0:
+        if roundCount %newTierCounter == 0:
             allowedTier += 1
             print("RAISING TIER TO: " + str(allowedTier))
             if newUnitCount*2 <= maxUnitCount:
