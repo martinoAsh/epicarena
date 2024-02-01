@@ -29,12 +29,9 @@ class Unit:
         self.tier = unitData['categories'][self.categoryNr]['units'][self.unitNr]['tier']
 
     #------------------------------
-    def printStats(self):
+    def getStatsAsString(self):
     #------------------------------
-        print(self.unitName + 
-                " ("+ self.categoryName + ")"
-                ", Count: " + str(self.count) + 
-                ", Active: " + str(self.isActive) + ", Tier: " + str(self.tier))
+        return self.unitName + " ("+ self.categoryName + ")"" - Amount: " + str(self.count) + " - Tier: " + str(self.tier)
 
 #------------------------------------------------------------------------------
 class Player:
@@ -97,8 +94,8 @@ class Player:
             redraw = otherPlayer.isUnitInDeck(categoryNr, unitNr)
 
         drawnUnit = Unit(categoryNr, unitNr, unitCount, isActive)
-        print(self.name + ", you drew: ", end='')
-        drawnUnit.printStats()
+        infoLabel["text"] = self.name + ", you drew: " + drawnUnit.getStatsAsString()
+        updateLabels()
         # TODO: check if already in deck
         # if self.evolveUnitIfInDeck(categoryNr, unitNr, drawnUnit.count):
         #     return
@@ -108,25 +105,47 @@ class Player:
     #------------------------------
     def evolveUnit(self, unitIndex):
     #------------------------------
-        # if self.canEvolve == False:
-        #     infoLabel["text"] = "You can not evolve right now!"
-        #     return
-        # TODO: activate this check again
+        if self.canEvolve == False:
+            infoLabel["text"] = "You can not evolve right now!"
+            return
 
         print("evoling index: " +str(unitIndex))
 
         self.deck[unitIndex].count = self.deck[unitIndex].count*2
         self.canEvolve = False
+        infoLabel["text"] = self.deck[unitIndex].unitName + " was evolved!"
         updateLabels()
 
     #------------------------------
     def enableDisableUnit(self, unitIndex):
     #------------------------------
-        # TODO: check amount of enabled units
+        if self.deck[unitIndex].isActive == True:
+            self.deck[unitIndex].isActive = False
+            infoLabel["text"] = "Unit disabled!"
+            updateLabels()
+            return
+        
+        # count active units
+        activeUnitsCount = self.getActiveUnitCount()
 
-        self.deck[unitIndex].isActive = not self.deck[unitIndex].isActive
+        if activeUnitsCount >= GLOBAL_MaxActiveUnits:
+            infoLabel["text"] = "Your active units are already maxed out!"
+            updateLabels()
+            return
+
+        self.deck[unitIndex].isActive = True
+        infoLabel["text"] = "Unit enabled!"
         updateLabels()
 
+    #------------------------------
+    def getActiveUnitCount(self):
+    #------------------------------
+        activeUnitsCount = 0
+        for currentUnit in self.deck:
+            if currentUnit.isActive == True:
+                activeUnitsCount += 1
+
+        return activeUnitsCount
 
 
 #------------------------------------------------------------------------------
@@ -137,6 +156,7 @@ def playerWonBtn(PlayerThatWon, OtherPlayer):
     PlayerThatWon.score +=1
     OtherPlayer.canEvolve = True
 
+    infoLabel["text"] = PlayerThatWon.name + " won the round. " + OtherPlayer.name + " is allowed to evolve"
     updateLabels()
 
 #------------------------------------------------------------------------------
@@ -155,13 +175,14 @@ def updateLabels():
     # Units player1:
     for unitIndexA in range(len(Player1.deck)):
         currentUnit = Player1.deck[unitIndexA]
-        labelText = str(currentUnit.count) + ": " + currentUnit.unitName + "(" + currentUnit.categoryName + ") INDEX: "+ str(unitIndexA)
+        labelText = currentUnit.unitName + " (" + currentUnit.categoryName + ") - AMOUNT: " + str(currentUnit.count)
         tk.Label(
             text=labelText,
             foreground = "black",
             background = "green" if currentUnit.isActive else "red",
             width=50,
-            height=5
+            height=5,
+            font='Helvetica 10 bold'
         ).grid(row=unitIndexA+1, column=2)
         tk.Button(
             text="EVOLVE",
@@ -169,25 +190,28 @@ def updateLabels():
             height=5,
             bg="purple",
             fg="yellow",
+            state= "normal" if Player1.canEvolve else "disabled",
             command= lambda idx = unitIndexA: Player1.evolveUnit(idx)).grid(row=unitIndexA+1, column=1)
         tk.Button(
             text="ENABLE/DISABLE",
             width=25,
             height=5,
-            bg="white",
-            fg="black",
+            bg="grey",
+            fg="yellow",
+            state= "normal" if Player1.deck[unitIndexA].isActive == True or Player1.getActiveUnitCount() < GLOBAL_MaxActiveUnits else "disabled",
             command= lambda idx = unitIndexA: Player1.enableDisableUnit(idx)).grid(row=unitIndexA+1, column=0)
 
     # Units player2:
     for unitIndexB in range(len(Player2.deck)):
         currentUnit = Player2.deck[unitIndexB]
-        labelText = str(currentUnit.count) + ": " + currentUnit.unitName + "(" + currentUnit.categoryName + ")  INDEX: "+ str(unitIndexB)
+        labelText = currentUnit.unitName + " (" + currentUnit.categoryName + ") - AMOUNT: " + str(currentUnit.count)
         tk.Label(
             text=labelText,
             foreground = "black",
             background = "green" if currentUnit.isActive else "red",
             width=50,
-            height=5
+            height=5,
+            font='Helvetica 10 bold'
         ).grid(row=unitIndexB+1, column=4)
         tk.Button(
             text="EVOLVE",
@@ -195,13 +219,15 @@ def updateLabels():
             height=5,
             bg="purple",
             fg="yellow",
+            state= "normal" if Player2.canEvolve else "disabled",
             command= lambda idx = unitIndexB: Player2.evolveUnit(idx)).grid(row=unitIndexB+1, column=5)
         tk.Button(
             text="ENABLE/DISABLE",
             width=25,
             height=5,
-            bg="white",
-            fg="black",
+            bg="grey",
+            fg="yellow",
+            state= "normal" if Player2.deck[unitIndexB].isActive == True or Player2.getActiveUnitCount() < GLOBAL_MaxActiveUnits else "disabled",
             command= lambda idx = unitIndexB: Player2.enableDisableUnit(idx)).grid(row=unitIndexB+1, column=6)
 
 
@@ -228,14 +254,16 @@ player1Label = tk.Label(
         foreground = "white",
         background = "black",
         width=50,
-        height=5
+        height=5,
+        font='Helvetica 10 bold'
     )
 player2Label = tk.Label(
         text=Player2.name + ": " + str(Player2.score),
         foreground = "white",
         background = "black",
         width=50,
-        height=5
+        height=5,
+        font='Helvetica 10 bold'
     )
 middleLabel = tk.Label(
         text="Rounds played:  " + str(roundsplayed),
@@ -249,7 +277,8 @@ infoLabel = tk.Label(
         foreground = "black",
         background = "white",
         width=100,
-        height=5
+        height=5,
+        font='Helvetica 12 bold'
     )
 
 
