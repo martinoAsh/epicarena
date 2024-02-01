@@ -6,6 +6,11 @@ import random
 GLOBAL_MaxDeckSize = 8
 GLOBAL_MaxActiveUnits = 4
 
+GLOBAL_ButtonWitdh = 15
+GLOBAL_Columnheight = 5
+GLOBAL_UnitField = 70
+GLOBAL_MiddleField = 30
+
 #------------------------------------------------------------------------------
 class Unit:
 #------------------------------------------------------------------------------
@@ -180,22 +185,22 @@ def updateLabels():
             text=labelText,
             foreground = "black",
             background = "green" if currentUnit.isActive else "red",
-            width=50,
-            height=5,
+            width=GLOBAL_UnitField,
+            height=GLOBAL_Columnheight,
             font='Helvetica 10 bold'
         ).grid(row=unitIndexA+1, column=2)
         tk.Button(
             text="EVOLVE",
-            width=25,
-            height=5,
+            width=GLOBAL_ButtonWitdh,
+            height=GLOBAL_Columnheight,
             bg="purple",
             fg="yellow",
             state= "normal" if Player1.canEvolve else "disabled",
             command= lambda idx = unitIndexA: Player1.evolveUnit(idx)).grid(row=unitIndexA+1, column=1)
         tk.Button(
             text="ENABLE/DISABLE",
-            width=25,
-            height=5,
+            width=GLOBAL_ButtonWitdh,
+            height=GLOBAL_Columnheight,
             bg="grey",
             fg="yellow",
             state= "normal" if Player1.deck[unitIndexA].isActive == True or Player1.getActiveUnitCount() < GLOBAL_MaxActiveUnits else "disabled",
@@ -209,22 +214,22 @@ def updateLabels():
             text=labelText,
             foreground = "black",
             background = "green" if currentUnit.isActive else "red",
-            width=50,
-            height=5,
+            width=GLOBAL_UnitField,
+            height=GLOBAL_Columnheight,
             font='Helvetica 10 bold'
         ).grid(row=unitIndexB+1, column=4)
         tk.Button(
             text="EVOLVE",
-            width=25,
-            height=5,
+            width=GLOBAL_ButtonWitdh,
+            height=GLOBAL_Columnheight,
             bg="purple",
             fg="yellow",
             state= "normal" if Player2.canEvolve else "disabled",
             command= lambda idx = unitIndexB: Player2.evolveUnit(idx)).grid(row=unitIndexB+1, column=5)
         tk.Button(
             text="ENABLE/DISABLE",
-            width=25,
-            height=5,
+            width=GLOBAL_ButtonWitdh,
+            height=GLOBAL_Columnheight,
             bg="grey",
             fg="yellow",
             state= "normal" if Player2.deck[unitIndexB].isActive == True or Player2.getActiveUnitCount() < GLOBAL_MaxActiveUnits else "disabled",
@@ -253,48 +258,47 @@ player1Label = tk.Label(
         text=Player1.name + ": " + str(Player1.score),
         foreground = "white",
         background = "black",
-        width=50,
-        height=5,
+        width=GLOBAL_UnitField,
+        height=GLOBAL_Columnheight,
         font='Helvetica 10 bold'
     )
 player2Label = tk.Label(
         text=Player2.name + ": " + str(Player2.score),
         foreground = "white",
         background = "black",
-        width=50,
-        height=5,
+        width=GLOBAL_UnitField,
+        height=GLOBAL_Columnheight,
         font='Helvetica 10 bold'
     )
 middleLabel = tk.Label(
         text="Rounds played:  " + str(roundsplayed),
         foreground = "purple",
         background = "grey",
-        width=20,
-        height=5
+        width=GLOBAL_MiddleField,
+        height=GLOBAL_Columnheight
     )
 infoLabel = tk.Label(
         text="",
         foreground = "black",
         background = "white",
-        width=100,
-        height=5,
-        font='Helvetica 12 bold'
+        width= GLOBAL_ButtonWitdh*4 + GLOBAL_MiddleField + GLOBAL_UnitField*2,
+        height=GLOBAL_Columnheight
     )
 
 
 # Buttons
 player1WonButton = tk.Button(
     text="WON ROUND",
-    width=25,
-    height=5,
+    width=GLOBAL_ButtonWitdh,
+    height=GLOBAL_Columnheight,
     bg="blue",
     fg="yellow",
     command= lambda: playerWonBtn(Player1, Player2)
 )
 player2WonButton = tk.Button(
     text="WON ROUND",
-    width=25,
-    height=5,
+    width=GLOBAL_ButtonWitdh,
+    height=GLOBAL_Columnheight,
     bg="blue",
     fg="yellow",
     command= lambda: playerWonBtn(Player2, Player1)
@@ -302,30 +306,46 @@ player2WonButton = tk.Button(
 
 player1DrawUnitButton = tk.Button(
     text="Draw unit",
-    width=25,
-    height=5,
+    width=GLOBAL_ButtonWitdh,
+    height=GLOBAL_Columnheight,
     bg="blue",
     fg="yellow",
     command= lambda: drawUnitBtn(Player1, Player2)
 )
 player2DrawUnitButton = tk.Button(
     text="Draw unit",
-    width=25,
-    height=5,
+    width=GLOBAL_ButtonWitdh,
+    height=GLOBAL_Columnheight,
     bg="blue",
     fg="yellow",
     command= lambda: drawUnitBtn(Player2, Player1)
 )
 
-# window.rowconfigure([0,1,2,3,4,5,6,7,8,9,10], minsize=1)
-# window.columnconfigure([0, 1, 2], minsize=50)
+window.rowconfigure(0 ,minsize=7)
+window.columnconfigure(0, minsize=GLOBAL_MaxDeckSize+2)
 
 # add lables to grid
 player1Label.grid(row=0, column=2, sticky="nsew")
 middleLabel.grid(row = 0, rowspan=GLOBAL_MaxDeckSize+1, column=3, sticky="nsew")
 player2Label.grid(row=0, column=4, sticky="nsew")
-infoLabel.grid(row=GLOBAL_MaxDeckSize+2, columnspan=7, sticky="nsew")
+infoLabel.grid(row=GLOBAL_MaxDeckSize+2, column=0, columnspan=7, sticky="nsew")
 
+
+for idx in range(GLOBAL_MaxDeckSize):
+    tk.Label(
+        text="empty",
+        foreground = "black",
+        background = "white",
+        width=GLOBAL_UnitField + GLOBAL_ButtonWitdh + GLOBAL_ButtonWitdh,
+        height=GLOBAL_Columnheight
+    ).grid(row=idx+1, column=0, columnspan=3)
+    tk.Label(
+        text="empty",
+        foreground = "black",
+        background = "white",
+        width=GLOBAL_UnitField + GLOBAL_ButtonWitdh*2,
+        height=GLOBAL_Columnheight
+    ).grid(row=idx+1, column=4, columnspan=3)
 
 # add buttons to grid
 player1WonButton.grid(row=0, column=1)
