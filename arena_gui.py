@@ -8,10 +8,10 @@ GLOBAL_MaxActiveUnits = 4
 GLOBAL_LoserDrawAmount = 3
 GLOBAL_WinnerDrawAmount = 1
 
-GLOBAL_ButtonWitdh = 15
+GLOBAL_ButtonWitdh = 13
 GLOBAL_Columnheight = 3
-GLOBAL_UnitField = 50
-GLOBAL_MiddleField = 20
+GLOBAL_UnitField = 20
+GLOBAL_MiddleField = 15
 
 # should be powers of 2 because units are always doubled when evolving
 GLOBAL_MaxUnitsPerTier = {
@@ -65,7 +65,7 @@ class Player:
         self.maxDeckLen = GLOBAL_MaxDeckSize
         self.maxActiveUnits = GLOBAL_MaxActiveUnits
         self.unitList = []
-        self.allowedDraws = 0
+        self.allowedDraws = 1
         self.lostRound = True
         self.parseUnitList()
 
@@ -172,7 +172,7 @@ class Player:
             infoLabel["text"] = "Unit disabled!"
             updateLabels()
             return
-        
+
         # count active units
         activeUnitsCount = self.getActiveUnitCount()
 
@@ -194,7 +194,6 @@ class Player:
     #------------------------------
     def removeDrawnUnit(self, drawnUnitIndex):
     #------------------------------
-        print("Player:"+ self.name +" is removing drawn unit, size of drawn units: " + str(len(self.drawnUnits)) + ", INDEX: " + str(drawnUnitIndex))
         self.drawnUnits.pop(drawnUnitIndex)
         updateLabels()
 
@@ -243,156 +242,190 @@ def getUnitStats(Unit):
 #------------------------------------------------------------------------------
 def updateLabels():
 #------------------------------------------------------------------------------
-    player1Label["text"] = Player1.name + ": " + str(Player1.score)
-    player2Label["text"] = Player2.name + ": " + str(Player2.score)
     middleLabel["text"] = "Rounds played:  " + str(roundsplayed) + " \n Max allowed Tier: " + str(currentMaxTier)
 
-    # put labels for units
+    for idx, CurrentPlayer in enumerate(GameManager):
+        CurrentPlayerClass = CurrentPlayer["class"]
+
+        # score
+        CurrentPlayer["scoreLabel"]["text"] = CurrentPlayerClass.name + ": " + str(CurrentPlayerClass.score)
+
+        # display deck
+        for idx in range(GLOBAL_MaxDeckSize):
+            if idx < len(CurrentPlayerClass.deck):
+                # unit slot
+                currentUnit = CurrentPlayerClass.deck[idx]
+                labelText = getUnitStats(currentUnit)
+                CurrentPlayer["deckLabels"][idx]["text"] = labelText
+                CurrentPlayer["deckLabels"][idx]["background"] = "green" if currentUnit.isActive else "red"
+                # enable buttons
+                CurrentPlayer["deckButtons"][idx]["deleteButton"]["state"] = "normal"
+                CurrentPlayer["deckButtons"][idx]["switchButton"]["state"] = "normal" if currentUnit.isActive or CurrentPlayerClass.getActiveUnitCount() < GLOBAL_MaxActiveUnits else "disabled"
+                CurrentPlayer["deckButtons"][idx]["switchButton"]["fg"] = "red" if currentUnit.isActive else "#0ffa1b"
+                CurrentPlayer["deckButtons"][idx]["switchButton"]["text"] = "DISABLE" if currentUnit.isActive else "ENABLE"
+            else:
+                # empty slot
+                CurrentPlayer["deckLabels"][idx]["text"] = "<empty deck slot>"
+                CurrentPlayer["deckLabels"][idx]["background"] = "white"
+                CurrentPlayer["deckButtons"][idx]["deleteButton"]["state"] = "disabled"
+                CurrentPlayer["deckButtons"][idx]["switchButton"]["state"] = "disabled"
+
+        # display drawn units
+        for idx in range(GLOBAL_LoserDrawAmount):
+            if idx < len(CurrentPlayerClass.drawnUnits):
+                # unit slot
+                currentUnit = CurrentPlayerClass.drawnUnits[idx]
+                labelText = getUnitStats(currentUnit)
+                CurrentPlayer["drawnUnitLabels"][idx]["text"] = labelText
+                # enable buttons
+                CurrentPlayer["drawnUnitButtons"][idx]["discardButton"]["state"] = "normal"
+                CurrentPlayer["drawnUnitButtons"][idx]["addButton"]["state"] = "normal"
+                CurrentPlayer["drawnUnitButtons"][idx]["addButton"]["text"] = "EVOLVE" if CurrentPlayerClass.isDrawnUnitInDeck(idx) else "ADD"
+                CurrentPlayer["drawnUnitButtons"][idx]["addButton"]["background"] = "green" if CurrentPlayerClass.isDrawnUnitInDeck(idx) else "purple"
+            else:
+                # empty slot
+                CurrentPlayer["drawnUnitLabels"][idx]["text"] = "<drawn units>"
+                CurrentPlayer["drawnUnitButtons"][idx]["discardButton"]["state"] = "disabled"
+                CurrentPlayer["drawnUnitButtons"][idx]["addButton"]["state"] = "disabled"
+                CurrentPlayer["drawnUnitButtons"][idx]["addButton"]["background"] = "purple"
+                CurrentPlayer["drawnUnitButtons"][idx]["addButton"]["text"] = "ADD"
+
+ #------------------------------------------------------------------------------
+def initPlayerLabelsAndButtons():
+#------------------------------------------------------------------------------
+    # Player specific lables and buttons
+    for idx, CurrentPlayer in enumerate(GameManager):
+        CurrentPlayerClass = CurrentPlayer["class"]
+        OtherPlayerClass = GameManager[1 - idx]["class"]
+        # score label
+        CurrentPlayer["scoreLabel"] = tk.Label(
+            text=CurrentPlayerClass.name + ": " + str(CurrentPlayerClass.score),
+            foreground = "white",
+            background = "black",
+            width=GLOBAL_UnitField,
+            height=GLOBAL_Columnheight,
+            font='Helvetica 10 bold')
+
+        # Round won button
+        CurrentPlayer["wonButton"] = tk.Button(
+        text="WON ROUND",
+        width=GLOBAL_ButtonWitdh,
+        height=GLOBAL_Columnheight,
+        bg="black",
+        fg="white",
+        command= lambda x=CurrentPlayerClass, y=OtherPlayerClass: playerWonBtn(x, y))
+
+        # Deck labels and buttons
+        for idx in range(GLOBAL_MaxDeckSize):
+            # labels
+            CurrentPlayer["deckLabels"].append(tk.Label(
+                text="<empty deck slot>",
+                foreground = "black",
+                background = "white",
+                font='Helvetica 10 bold',
+                borderwidth = 1,
+                relief="solid",
+                width=GLOBAL_UnitField + GLOBAL_ButtonWitdh + GLOBAL_ButtonWitdh,
+                height=GLOBAL_Columnheight))
+            # generate delete button
+            currentDeleteButton = tk.Button(
+            text="DELETE",
+            width=GLOBAL_ButtonWitdh-1,
+            height=GLOBAL_Columnheight-1,
+            bg="red",
+            fg="black",
+            state= "disabled",
+            font='Helvetica 10 bold',
+            borderwidth = 1,
+            relief="solid",
+            command= lambda index = idx, player = CurrentPlayerClass : player.removeUnit(index))
+            # generate switch button
+            currentSwitchButton = tk.Button(
+            text="",
+            width=GLOBAL_ButtonWitdh-1,
+            height=GLOBAL_Columnheight-1,
+            bg="blue",
+            fg="black",
+            state= "disabled",
+            font='Helvetica 10 bold',
+            borderwidth = 1,
+            relief="solid",
+            command= lambda index = idx, player = CurrentPlayerClass: player.enableDisableUnit(index))
+            # append buttons
+            CurrentPlayer["deckButtons"].append({"deleteButton": currentDeleteButton, "switchButton": currentSwitchButton})
+
+        # DrawnUnits labels and buttons
+        # labels
+        for idx in range(GLOBAL_LoserDrawAmount):
+            CurrentPlayer["drawnUnitLabels"].append(tk.Label(
+                text="<drawn units>",
+                foreground = "yellow",
+                background = "gray",
+                font='Helvetica 10 bold',
+                borderwidth = 1,
+                relief="solid",
+                width=GLOBAL_UnitField + GLOBAL_ButtonWitdh + GLOBAL_ButtonWitdh,
+                height=GLOBAL_Columnheight))
+            #generate add button
+            addButton = tk.Button(
+                text="ADD",
+                width=GLOBAL_ButtonWitdh-1,
+                height=GLOBAL_Columnheight-1,
+                bg="purple",
+                fg="yellow",
+                state= "disabled",
+                font='Helvetica 10 bold',
+                borderwidth = 1,
+                relief="solid",
+                command= lambda index = idx, player = CurrentPlayerClass: player.addDrawnUnitToDeck(index))
+            # generate discard button
+            discardButton = tk.Button(
+                text="DISCARD",
+                width=GLOBAL_ButtonWitdh-1,
+                height=GLOBAL_Columnheight-1,
+                bg="red",
+                fg="black",
+                state= "disabled",
+                font='Helvetica 10 bold',
+                borderwidth = 1,
+                relief="solid",
+                command= lambda index = idx, player = CurrentPlayerClass: player.removeDrawnUnit(index))
+            # append buttons
+            CurrentPlayer["drawnUnitButtons"].append({"addButton": addButton, "discardButton": discardButton})
+
+#------------------------------------------------------------------------------
+def addLabelsAndButtonsToGrid():
+#------------------------------------------------------------------------------
+    # add static lables to grid
+    GameManager[0]["scoreLabel"].grid(row=0, column=2, sticky="nsew")
+    GameManager[1]["scoreLabel"].grid(row=0, column=4, sticky="nsew")
+    middleLabel.grid(row = 0, rowspan=GLOBAL_MaxDeckSize+GLOBAL_LoserDrawAmount+1, column=3, sticky="nsew")
+    infoLabel.grid(row=GLOBAL_MaxDeckSize+GLOBAL_LoserDrawAmount+1, column=0, columnspan=7, sticky="nsew")
+
+    # add static buttons to grid
+    GameManager[0]["wonButton"].grid(row=0, column=1)
+    GameManager[1]["wonButton"].grid(row=0, column=5)
+
+    #add deck labels and buttons for both players
     for idx in range(GLOBAL_MaxDeckSize):
-        tk.Label(
-            text="<empty deck slot>",
-            foreground = "black",
-            background = "white",
-            font='Helvetica 10 bold',
-            width=GLOBAL_UnitField + GLOBAL_ButtonWitdh + GLOBAL_ButtonWitdh,
-            height=GLOBAL_Columnheight
-        ).grid(row=idx+1, column=0, columnspan=3)
-        tk.Label(
-            text="<empty deck slot>",
-            foreground = "black",
-            background = "white",
-            font='Helvetica 10 bold',
-            width=GLOBAL_UnitField + GLOBAL_ButtonWitdh*2,
-            height=GLOBAL_Columnheight
-        ).grid(row=idx+1, column=4, columnspan=3)
+        GameManager[0]["deckLabels"][idx].grid(row=idx+1, column=2)
+        GameManager[0]["deckButtons"][idx]["deleteButton"].grid(row=idx+1, column=0)
+        GameManager[0]["deckButtons"][idx]["switchButton"].grid(row=idx+1, column=1)
 
-    # put labels for drawnUnits
+        GameManager[1]["deckLabels"][idx].grid(row=idx+1, column=4)
+        GameManager[1]["deckButtons"][idx]["deleteButton"].grid(row=idx+1, column=6)
+        GameManager[1]["deckButtons"][idx]["switchButton"].grid(row=idx+1, column=5)
+
+    #add drawnUnit labels and buttons for both players
     for idx in range(GLOBAL_LoserDrawAmount):
-        tk.Label(
-            text="<drawn units>",
-            foreground = "yellow",
-            background = "gray",
-            font='Helvetica 10 bold',
-            width=GLOBAL_UnitField + GLOBAL_ButtonWitdh + GLOBAL_ButtonWitdh,
-            height=GLOBAL_Columnheight
-        ).grid(row=idx+GLOBAL_MaxDeckSize+1, column=0, columnspan=3)
-        tk.Label(
-            text="<drawn units>",
-            foreground = "yellow",
-            background = "gray",
-            font='Helvetica 10 bold',
-            width=GLOBAL_UnitField + GLOBAL_ButtonWitdh*2,
-            height=GLOBAL_Columnheight
-        ).grid(row=idx+GLOBAL_MaxDeckSize+1, column=4, columnspan=3)
+        GameManager[0]["drawnUnitLabels"][idx].grid(row=idx+GLOBAL_MaxDeckSize+1, column=2)
+        GameManager[0]["drawnUnitButtons"][idx]["discardButton"].grid(row=idx+GLOBAL_MaxDeckSize+1, column=0)
+        GameManager[0]["drawnUnitButtons"][idx]["addButton"].grid(row=idx+GLOBAL_MaxDeckSize+1, column=1)
 
-    # Units in deck player 1:
-    for unitindex in range(len(Player1.deck)):
-        currentUnit = Player1.deck[unitindex]
-        labelText = getUnitStats(currentUnit)
-        tk.Label(
-            text=labelText,
-            foreground = "black",
-            background = "green" if currentUnit.isActive else "red",
-            width=GLOBAL_UnitField,
-            height=GLOBAL_Columnheight,
-            font='Helvetica 10 bold'
-        ).grid(row=unitindex+1, column= 2)
-        tk.Button(
-            text="DELETE",
-            width=GLOBAL_ButtonWitdh,
-            height=GLOBAL_Columnheight-1,
-            bg="red",
-            fg="black",
-            command= lambda idx = unitindex: Player1.removeUnit(idx)).grid(row=unitindex+1, column=0)
-        tk.Button(
-            text="ENABLE/DISABLE",
-            width=GLOBAL_ButtonWitdh,
-            height=GLOBAL_Columnheight-1,
-            bg="grey",
-            fg="yellow",
-            state= "normal" if Player1.deck[unitindex].isActive == True or Player1.getActiveUnitCount() < GLOBAL_MaxActiveUnits else "disabled",
-            command= lambda idx = unitindex: Player1.enableDisableUnit(idx)).grid(row=unitindex+1, column= 1)
-    # Drawn units player1:
-    for unitindex in range(len(Player1.drawnUnits)):
-        currentUnit = Player1.drawnUnits[unitindex]
-        labelText = getUnitStats(currentUnit)
-        tk.Label(
-            text=labelText,
-            foreground = "black",
-            background = "yellow",
-            width=GLOBAL_UnitField,
-            height=GLOBAL_Columnheight,
-            font='Helvetica 10 bold'
-        ).grid(row=unitindex+GLOBAL_MaxDeckSize+1, column=2)
-        tk.Button(
-            text="EVOLVE" if Player1.isDrawnUnitInDeck(unitindex) else "ADD",
-            width=GLOBAL_ButtonWitdh,
-            height=GLOBAL_Columnheight-1,
-            bg="purple",
-            fg="yellow",
-            command= lambda idx = unitindex: Player1.addDrawnUnitToDeck(idx)).grid(row=GLOBAL_MaxDeckSize+unitindex+1, column= 1)
-        tk.Button(
-            text="DISCARD",
-            width=GLOBAL_ButtonWitdh,
-            height=GLOBAL_Columnheight-1,
-            bg="grey",
-            fg="yellow",
-            command= lambda idx = unitindex: Player1.removeDrawnUnit(idx)).grid(row=GLOBAL_MaxDeckSize+unitindex+1, column= 0)
+        GameManager[1]["drawnUnitLabels"][idx].grid(row=idx+GLOBAL_MaxDeckSize+1, column=4)
+        GameManager[1]["drawnUnitButtons"][idx]["discardButton"].grid(row=idx+GLOBAL_MaxDeckSize+1, column=6)
+        GameManager[1]["drawnUnitButtons"][idx]["addButton"].grid(row=idx+GLOBAL_MaxDeckSize+1, column=5)
 
-
-    # Units in deck player 2:
-    for unitindex in range(len(Player2.deck)):
-        currentUnit = Player2.deck[unitindex]
-        labelText = getUnitStats(currentUnit)
-        tk.Label(
-            text=labelText,
-            foreground = "black",
-            background = "green" if currentUnit.isActive else "red",
-            width=GLOBAL_UnitField,
-            height=GLOBAL_Columnheight,
-            font='Helvetica 10 bold'
-        ).grid(row=unitindex+1, column= 4)
-        tk.Button(
-            text="DELETE",
-            width=GLOBAL_ButtonWitdh,
-            height=GLOBAL_Columnheight-1,
-            bg="red",
-            fg="black",
-            command= lambda idx = unitindex: Player2.removeUnit(idx)).grid(row=unitindex+1, column=6)
-        tk.Button(
-            text="ENABLE/DISABLE",
-            width=GLOBAL_ButtonWitdh,
-            height=GLOBAL_Columnheight-1,
-            bg="grey",
-            fg="yellow",
-            state= "normal" if Player2.deck[unitindex].isActive == True or Player2.getActiveUnitCount() < GLOBAL_MaxActiveUnits else "disabled",
-            command= lambda idx = unitindex: Player2.enableDisableUnit(idx)).grid(row=unitindex+1, column= 5)
-    # Drawn units player2:
-    for unitindex in range(len(Player2.drawnUnits)):
-        currentUnit = Player2.drawnUnits[unitindex]
-        labelText = getUnitStats(currentUnit)
-        tk.Label(
-            text=labelText,
-            foreground = "black",
-            background = "yellow",
-            width=GLOBAL_UnitField,
-            height=GLOBAL_Columnheight,
-            font='Helvetica 10 bold'
-        ).grid(row=unitindex+GLOBAL_MaxDeckSize+1, column=4)
-        tk.Button(
-            text="EVOLVE" if Player2.isDrawnUnitInDeck(unitindex) else "ADD",
-            width=GLOBAL_ButtonWitdh,
-            height=GLOBAL_Columnheight-1,
-            bg="purple",
-            fg="yellow",
-            command= lambda idx = unitindex: Player2.addDrawnUnitToDeck(idx)).grid(row=GLOBAL_MaxDeckSize+unitindex+1, column= 5)
-        tk.Button(
-            text="DISCARD",
-            width=GLOBAL_ButtonWitdh,
-            height=GLOBAL_Columnheight-1,
-            bg="grey",
-            fg="yellow",
-            command= lambda idx = unitindex: Player2.removeDrawnUnit(idx)).grid(row=GLOBAL_MaxDeckSize+unitindex+1, column= 6)
 
 #------------------------------------------------------------------------------
 # -------MAIN CODE:
@@ -403,81 +436,49 @@ def updateLabels():
 player1name = "MARTINO"
 player2name = "MATTI"
 
+roundsplayed = 0
+currentMaxTier = 1
 
 window = tk.Tk()
+
 
 Player1 = Player(player1name)
 Player2 = Player(player2name)
 
-roundsplayed = 0
-currentMaxTier = 1
 
-# Labels
-player1Label = tk.Label(
-        text=Player1.name + ": " + str(Player1.score),
-        foreground = "white",
-        background = "black",
-        width=GLOBAL_UnitField,
-        height=GLOBAL_Columnheight,
-        font='Helvetica 10 bold'
-    )
-player2Label = tk.Label(
-        text=Player2.name + ": " + str(Player2.score),
-        foreground = "white",
-        background = "black",
-        width=GLOBAL_UnitField,
-        height=GLOBAL_Columnheight,
-        font='Helvetica 10 bold'
-    )
+player1Data = {"class": Player1, "scoreLabel": tk.Label(), "wonButton": tk.Button(),
+            "deckLabels": [], "drawnUnitLabels" : [], "deckButtons": [], "drawnUnitButtons": []}
+
+player2Data = {"class": Player2, "scoreLabel": tk.Label(), "wonButton": tk.Button(),
+            "deckLabels": [], "drawnUnitLabels" : [], "deckButtons": [], "drawnUnitButtons": []}
+
+
+GameManager = [player1Data, player2Data]
+
 middleLabel = tk.Label(
         text="Rounds played:  " + str(roundsplayed),
         foreground = "purple",
         background = "grey",
+        borderwidth = 1,
+        relief="solid",
         width=GLOBAL_MiddleField,
-        height=GLOBAL_Columnheight
-    )
+        height=GLOBAL_Columnheight)
 infoLabel = tk.Label(
         text="",
         foreground = "black",
         background = "white",
+        borderwidth = 1,
+        relief="solid",
         width= GLOBAL_ButtonWitdh*4 + GLOBAL_MiddleField + GLOBAL_UnitField*2,
-        height=GLOBAL_Columnheight
-    )
+        height=GLOBAL_Columnheight)
 
 
-# Buttons
-player1WonButton = tk.Button(
-    text="WON ROUND",
-    width=GLOBAL_ButtonWitdh,
-    height=GLOBAL_Columnheight,
-    bg="blue",
-    fg="yellow",
-    command= lambda: playerWonBtn(Player1, Player2)
-)
-player2WonButton = tk.Button(
-    text="WON ROUND",
-    width=GLOBAL_ButtonWitdh,
-    height=GLOBAL_Columnheight,
-    bg="blue",
-    fg="yellow",
-    command= lambda: playerWonBtn(Player2, Player1)
-)
+initPlayerLabelsAndButtons()
 
-window.rowconfigure(0 ,minsize=7)
-window.columnconfigure(0, minsize=GLOBAL_MaxDeckSize+2)
+addLabelsAndButtonsToGrid()
 
-# add lables to grid
-player1Label.grid(row=0, column=2, sticky="nsew")
-middleLabel.grid(row = 0, rowspan=GLOBAL_MaxDeckSize+GLOBAL_LoserDrawAmount+1, column=3, sticky="nsew")
-player2Label.grid(row=0, column=4, sticky="nsew")
-infoLabel.grid(row=GLOBAL_MaxDeckSize+GLOBAL_LoserDrawAmount+1, column=0, columnspan=7, sticky="nsew")
-
-
-# add buttons to grid
-player1WonButton.grid(row=0, column=1)
-player2WonButton.grid(row=0, column=5)
-# player1DrawUnitButton.grid(row=GLOBAL_MaxDeckSize+GLOBAL_LoserDrawAmount+1, column=2)
-# player2DrawUnitButton.grid(row=GLOBAL_MaxDeckSize+GLOBAL_LoserDrawAmount+1, column=4)
+Player1.drawUnit(Player2)
+Player2.drawUnit(Player1)
 
 updateLabels()
 
