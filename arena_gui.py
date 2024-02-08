@@ -233,10 +233,10 @@ def playerWonBtn(PlayerThatWon, OtherPlayer):
 
     if (PlayerThatWon.score > OtherPlayer.score) and (PlayerThatWon.score - OtherPlayer.score) >= GLOBAL_RequiredLeadToWin:
         GLOBAL_IsGameOver = True
-        infoLabel["text"] = PlayerThatWon.name + " reigns as the universal champion! The games are now over."
+        infoLabel["text"] = "Champion: "+PlayerThatWon.name+"\n\n He shall reign as the universal commander of cruelty!\n The times of bloodshed have come to an end now."
         infoLabel["bg"] = "green"
         infoLabel["fg"] = "black"
-        infoLabel["font"] = "Palatino 13 bold"
+        infoLabel["font"] = "Helvetica 15 bold"
         infoLabel["height"] = GLOBAL_Columnheight+4
         updateLabels()
         return
