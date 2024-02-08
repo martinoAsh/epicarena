@@ -7,6 +7,8 @@ GLOBAL_MaxDeckSize = 8
 GLOBAL_MaxActiveUnits = 4
 GLOBAL_LoserDrawAmount = 3
 GLOBAL_WinnerDrawAmount = 1
+GLOBAL_RequiredLeadToWin = 4
+GLOBAL_IsGameOver = False
 
 GLOBAL_ButtonWitdh = 13
 GLOBAL_Columnheight = 3
@@ -110,6 +112,8 @@ class Player:
     #------------------------------
     def addDrawnUnitToDeck(self, drawnUnitIndex):
     #------------------------------
+        if(GLOBAL_IsGameOver):
+            return
         if self.addUnit(self.drawnUnits[drawnUnitIndex]) == True:
             self.drawnUnits.pop(drawnUnitIndex)
             updateLabels()
@@ -167,6 +171,8 @@ class Player:
     #------------------------------
     def enableDisableUnit(self, unitIndex):
     #------------------------------
+        if(GLOBAL_IsGameOver):
+            return
         if self.deck[unitIndex].isActive == True:
             self.deck[unitIndex].isActive = False
             infoLabel["text"] = "Unit disabled!"
@@ -187,6 +193,8 @@ class Player:
     #------------------------------
     def removeUnit(self, unitIndex):
     #------------------------------
+        if(GLOBAL_IsGameOver):
+            return
         self.deck.pop(unitIndex)
         infoLabel["text"] = "Unit was removed from deck!"
         updateLabels()
@@ -194,6 +202,8 @@ class Player:
     #------------------------------
     def removeDrawnUnit(self, drawnUnitIndex):
     #------------------------------
+        if(GLOBAL_IsGameOver):
+            return
         self.drawnUnits.pop(drawnUnitIndex)
         updateLabels()
 
@@ -213,8 +223,23 @@ def playerWonBtn(PlayerThatWon, OtherPlayer):
 #------------------------------------------------------------------------------
     global roundsplayed
     global currentMaxTier
+    global GLOBAL_IsGameOver
+
+    if(GLOBAL_IsGameOver):
+        return
+
     roundsplayed += 1
     PlayerThatWon.score +=1
+
+    if (PlayerThatWon.score > OtherPlayer.score) and (PlayerThatWon.score - OtherPlayer.score) >= GLOBAL_RequiredLeadToWin:
+        GLOBAL_IsGameOver = True
+        infoLabel["text"] = PlayerThatWon.name + " reigns as the universal champion! The games are now over."
+        infoLabel["bg"] = "green"
+        infoLabel["fg"] = "black"
+        infoLabel["font"] = "Palatino 13 bold"
+        infoLabel["height"] = GLOBAL_Columnheight+4
+        updateLabels()
+        return
 
     if roundsplayed % GLOBAL_RoundsUntilTierIncrease == 0 and currentMaxTier < GLOBAL_MaxTier:
         infoLabel["text"] =" Allowed Tier increased!"
@@ -430,11 +455,10 @@ def addLabelsAndButtonsToGrid():
 #------------------------------------------------------------------------------
 # -------MAIN CODE:
 #------------------------------------------------------------------------------
-# player1 = input("Who is Player 1: ")
-# player2 = input("Who is Player 2: ")
-# TODO: use input for player names
-player1name = "MARTINO"
-player2name = "MATTI"
+player1name = input("Who is Player 1: ")
+player2name = input("Who is Player 2: ")
+#player1name = "MARTINO"
+#player2name = "MATTI"
 
 roundsplayed = 0
 currentMaxTier = 1
